@@ -1,4 +1,4 @@
-// Generated on 2013-12-01 using generator-webapp 0.4.4
+// Generated on 2013-11-24 using generator-webapp 0.4.4
 'use strict';
 
 // # Globbing
@@ -28,12 +28,16 @@ module.exports = function (grunt) {
                 files: ['<%= yeoman.app %>/styles/{,*/}*.css'],
                 tasks: ['copy:styles', 'autoprefixer']
             },
+            jade: {
+                files: ['<%= yeoman.app %>/{,*/}*.jade', '<%= yeoman.app %>/views/{,*/}*.jade'],
+                tasks: ['jade:server']
+            },
             livereload: {
                 options: {
                     livereload: '<%= connect.options.livereload %>'
                 },
                 files: [
-                    '<%= yeoman.app %>/*.html',
+                    '.tmp/*.html',
                     '.tmp/styles/{,*/}*.css',
                     '{.tmp,<%= yeoman.app %>}/scripts/{,*/}*.js',
                     '<%= yeoman.app %>/images/{,*/}*.{gif,jpeg,jpg,png,svg,webp}'
@@ -42,7 +46,7 @@ module.exports = function (grunt) {
         },
         connect: {
             options: {
-                port: 9000,
+                port: 9090,
                 livereload: 35729,
                 // change this to '0.0.0.0' to access the server from outside
                 hostname: 'localhost'
@@ -178,7 +182,7 @@ module.exports = function (grunt) {
             options: {
                 dest: '<%= yeoman.dist %>'
             },
-            html: '<%= yeoman.app %>/index.html'
+            html: '.tmp/index.html'
         },
         usemin: {
             options: {
@@ -238,7 +242,7 @@ module.exports = function (grunt) {
                 },
                 files: [{
                     expand: true,
-                    cwd: '<%= yeoman.app %>',
+                    cwd: '.tmp',
                     src: '*.html',
                     dest: '<%= yeoman.dist %>'
                 }]
@@ -281,6 +285,7 @@ module.exports = function (grunt) {
         },
         concurrent: {
             server: [
+                'jade:server',
                 'compass',
                 'copy:styles'
             ],
@@ -294,7 +299,38 @@ module.exports = function (grunt) {
                 'svgmin',
                 'htmlmin'
             ]
+        },
+        jade: {
+            dist: {
+                options: {
+                    pretty: true
+                },
+                files: [
+                    {
+                        expand: true,
+                        cwd: '<%= yeoman.app %>',
+                        dest: '.tmp',
+                        src: '{,*/}*.jade',
+                        ext: '.html'
+                    }
+                ]
+            },
+            server: {
+                options: {
+                    pretty: true
+                },
+                files: [
+                    {
+                        expand: true,
+                        cwd: '<%= yeoman.app %>',
+                        dest: '.tmp',
+                        src: '{,*/}*.jade',
+                        ext: '.html'
+                    }
+                ]
+            }
         }
+
     });
 
     grunt.registerTask('serve', function (target) {
@@ -326,6 +362,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('build', [
         'clean:dist',
+        'jade:dist',
         'useminPrepare',
         'concurrent:dist',
         'autoprefixer',
